@@ -8,6 +8,10 @@ const nextConfig = {
       },
     ],
   },
+  env: {
+    CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY, // Ensure this is accessible
+    CLERK_SECRET_KEY:process.env.CLERK_SECRET_KEY
+  },
 };
 
 export default nextConfig;

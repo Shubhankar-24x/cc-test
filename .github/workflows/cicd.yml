@@ -8,7 +8,7 @@ on:
   pull_request:
     branches: [ main ]
     types: [opened, synchronize, reopened]
-  workflow_dispatch:  # Manual trigger for the workflow
+  workflow_dispatch:
 
 env:
   REGISTRY: docker.io
@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full clone for accurate analysis
+          fetch-depth: 0  
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -34,8 +34,6 @@ jobs:
 
       - name: Run ESLint (Static Code Analysis)
         run: npm run lint
-
-     
 
   test:
     name: Unit Testing
@@ -77,11 +75,19 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Verify dist directory exists
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: dist directory not found!"
+            exit 1
+          fi
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
-          path: dist/
+          path: $GITHUB_WORKSPACE/dist/
+          if-no-files-found: error  # Fail if no files found
 
   docker:
     name: Docker Build and Push
@@ -97,7 +103,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
-          path: dist/
+          path: dist/  # Ensure downloaded files go to correct location
+
+      - name: Verify dist directory exists after download
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: dist directory not found after artifact download!"
+            exit 1
+          fi
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3

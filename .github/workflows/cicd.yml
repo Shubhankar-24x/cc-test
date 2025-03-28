@@ -75,10 +75,10 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Verify dist directory exists
+      - name: Verify .next directory exists
         run: |
-          if [ ! -d "dist" ]; then
-            echo "Error: dist directory not found!"
+          if [ ! -d ".next" ]; then
+            echo "Error: .next directory not found!"
             exit 1
           fi
 
@@ -86,7 +86,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
-          path: $GITHUB_WORKSPACE/dist/
+          path: .next/
           if-no-files-found: error  # Fail if no files found
 
   docker:
@@ -103,12 +103,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
-          path: dist/  # Ensure downloaded files go to correct location
+          path: .next/
 
-      - name: Verify dist directory exists after download
+      - name: Verify .next directory exists after download
         run: |
-          if [ ! -d "dist" ]; then
-            echo "Error: dist directory not found after artifact download!"
+          if [ ! -d ".next" ]; then
+            echo "Error: .next directory not found after artifact download!"
             exit 1
           fi
 
